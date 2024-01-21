@@ -43,7 +43,7 @@ public final class RemoteFeedLoader {
                     completion(.failure(.invalidData))
                     return
                 }
-                completion(.success(data.items))
+                completion(.success(data.items.map{ $0.item }))
             case .failure:
                 completion(.failure(.connectivity))
             }
@@ -51,5 +51,16 @@ public final class RemoteFeedLoader {
     }
 }
 private struct Root: Decodable {
-    public let items: [FeedItem]
+    public let items: [Item]
+}
+
+private struct Item: Decodable {
+    let id: UUID
+    let description: String?
+    let location: String?
+    let image: String
+    
+    var item: FeedItem {
+        FeedItem(id: id, description: description, location: location, imageURL: image)
+    }
 }
