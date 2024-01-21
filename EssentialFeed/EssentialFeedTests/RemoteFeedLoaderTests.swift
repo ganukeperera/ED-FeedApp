@@ -66,6 +66,17 @@ class RemoteFeedLoaderTests: XCTestCase {
         }
     }
     
+    func test_load_deliversAnEmptyArrayWithHTTP200ResponseWithEmptyJSONData() {
+        let (client, sut) = makeSUT()
+        let jsonData = Data("{\"items\": []}".utf8)
+        var capturedResult = [RemoteFeedLoader.Result]()
+        sut.load{
+            capturedResult.append($0)
+        }
+        client.complete(withStatusCode: 200, with: jsonData)
+        XCTAssertEqual(capturedResult, [.success([])])
+    }
+    
     //MARK: Helpers
     
     private func expect(sut: RemoteFeedLoader, error: RemoteFeedLoader.Error, action: ()->Void, file: StaticString = #file, line: UInt = #line) {
