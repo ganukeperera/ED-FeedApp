@@ -9,10 +9,18 @@ import Foundation
 import XCTest
 @testable import EssentialFeed
 
+protocol HTTPSession {
+    func dataTask(with request: URLRequest, completionHandler: @escaping (Data?, URLResponse?, Error?) -> Void) -> HTTPDataTask
+}
+
+protocol HTTPDataTask {
+    func resume()
+}
+
 class URLSessionHTTPClient {
-    let session: URLSession
+    let session: HTTPSession
     
-    init(session: URLSession) {
+    init(session: HTTPSession) {
         self.session = session
     }
     
@@ -60,14 +68,14 @@ class URLSessionHTTPClientTest: XCTestCase {
         wait(for: [expectation], timeout: 1.0)
     }
     
-    class URLSessionSpy: URLSession {
-        private var stubs = [URL: (task: URLSessionDataTask,error: Error?)]()
+    class URLSessionSpy: HTTPSession {
+        private var stubs = [URL: (task: HTTPDataTask,error: Error?)]()
         
-        func stub(url: URL, dataTask: URLSessionDataTask = FakeURLSessionDataTask(), error: Error? = nil) {
+        func stub(url: URL, dataTask: HTTPDataTask = FakeURLSessionDataTask(), error: Error? = nil) {
             stubs[url] = (task: dataTask, error: error)
         }
         
-        override func dataTask(with request: URLRequest, completionHandler: @escaping (Data?, URLResponse?, Error?) -> Void) -> URLSessionDataTask {
+        func dataTask(with request: URLRequest, completionHandler: @escaping (Data?, URLResponse?, Error?) -> Void) -> HTTPDataTask {
             guard let stub = stubs[request.url!] else {
                 fatalError("Could not find the task")
             }
@@ -76,14 +84,13 @@ class URLSessionHTTPClientTest: XCTestCase {
         }
     }
     
-    class FakeURLSessionDataTask: URLSessionDataTask {
-        override func resume() {
-        }
+    class FakeURLSessionDataTask: HTTPDataTask {
+        func resume() {}
     }
     
-    class URLSessionDataTaskSpy: URLSessionDataTask {
+    class URLSessionDataTaskSpy: HTTPDataTask {
         var resumeCount = 0
-        override func resume() {
+        func resume() {
             resumeCount += 1
         }
     }
