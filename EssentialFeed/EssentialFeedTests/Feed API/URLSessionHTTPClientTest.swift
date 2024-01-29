@@ -16,10 +16,16 @@ class URLSessionHTTPClient {
         self.session = session
     }
     
+    private struct UnexpectedValueRepresentation: Error {}
+    
     func get(from url: URL, completion: @escaping (HTTPClientResult) -> Void) {
         session.dataTask(with: URLRequest(url: url), completionHandler: {_, _, error in
-            guard let error else { return }
-            completion(.failure(error))
+            if let error {
+                completion(.failure(error))
+            } else {
+                completion(.failure(UnexpectedValueRepresentation()))
+            }
+            
         }).resume()
     }
 }
@@ -51,7 +57,7 @@ class URLSessionHTTPClientTest: XCTestCase {
     }
     
     func test_getFromURL_completWithAnError() {
-        let expectedError = NSError(domain: "Testing", code: 0)
+        let expectedError = anyError()
         URLProtocolStub.stub(data: nil, response: nil, error: expectedError)
         
         let expectation = expectation(description: "testing")
@@ -68,6 +74,23 @@ class URLSessionHTTPClientTest: XCTestCase {
         wait(for: [expectation], timeout: 3.0)
     }
     
+    func test_getFromUrl_completeWithErrorWhenAllValuesAreNil() {
+        let sut = makeSUT()
+        URLProtocolStub.stub(data: nil, response: nil, error: nil)
+        
+        let expectation = expectation(description: "wait for the test")
+        sut.get(from: anyURL()) { result in
+            switch result {
+            case .failure:
+                break
+            default:
+                XCTFail("expected failure but received \(result)")
+            }
+            expectation.fulfill()
+        }
+        wait(for: [expectation], timeout: 1.0)
+    }
+    
     // MARK: - Helpers
     
     private func makeSUT(file: StaticString = #file, line: UInt = #line) -> URLSessionHTTPClient {
@@ -78,6 +101,10 @@ class URLSessionHTTPClientTest: XCTestCase {
     
     private func anyURL() -> URL {
         URL(string: "https://a-given-url.com")!
+    }
+    
+    private func anyError() -> NSError {
+        NSError(domain: "Testing", code: 0)
     }
     
     class URLProtocolStub: URLProtocol {
