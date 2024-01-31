@@ -11,20 +11,8 @@ import XCTest
 final class EssentialFeedEndToEndTests: XCTestCase {
     
     func test_endToEndTestServerGETFeedResult_matchesFixedTestAccountData() {
-        let url = URL(string: "https://www.essentialdeveloper.com/feed-case-study/test-api/feed")!
-        let client = URLSessionHTTPClient()
-        let feedLoader = RemoteFeedLoader(url: url, client: client)
-        
-        let expectation = expectation(description: "waiting for the tests")
-        var capturedReault: LoadFeedResult?
-        feedLoader.load { result in
-            capturedReault = result
-            expectation.fulfill()
-        }
-        
-        wait(for: [expectation], timeout: 8.0)
-        
-        switch capturedReault {
+
+        switch getFeedResult() {
         case .success(let items)?:
             XCTAssertEqual(items.count, 8)
             
@@ -45,6 +33,22 @@ final class EssentialFeedEndToEndTests: XCTestCase {
     }
     
     // MARK: - Helpers
+    
+    private func getFeedResult() -> LoadFeedResult? {
+        let url = URL(string: "https://www.essentialdeveloper.com/feed-case-study/test-api/feed")!
+        let client = URLSessionHTTPClient()
+        let feedLoader = RemoteFeedLoader(url: url, client: client)
+        
+        let expectation = expectation(description: "waiting for the tests")
+        var capturedReault: LoadFeedResult?
+        feedLoader.load { result in
+            capturedReault = result
+            expectation.fulfill()
+        }
+        
+        wait(for: [expectation], timeout: 8.0)
+        return capturedReault
+    }
     
     private func expectedItem(at index: Int) -> FeedItem {
         FeedItem(id: id(at: index), description: description(at: index), location: location(at: index), imageURL: imageURL(at: index))
