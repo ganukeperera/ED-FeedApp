@@ -13,6 +13,7 @@
   },
   "testTargets" : [
     {
+      "parallelizable" : true,
       "target" : {
         "containerPath" : "container:EssentialFeed.xcodeproj",
         "identifier" : "90A754082B52E6CD007083C7",
