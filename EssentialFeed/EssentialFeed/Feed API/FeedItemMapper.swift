@@ -8,6 +8,21 @@
 import Foundation
 
 enum FeedItemMapper {
+    
+    private static var OK_200: Int { return 200 }
+    
+    static func map(_ data: Data, _ response: HTTPURLResponse) -> LoadFeedResult {
+        
+        guard response.statusCode == OK_200, let root =  try? JSONDecoder().decode(Root.self, from: data)  else {
+            return .failure(RemoteFeedLoader.Error.invalidData)
+        }
+        
+        let items = root.feedItems
+        return .success(items)
+    }
+}
+
+extension FeedItemMapper {
     private struct Root: Decodable {
         let items: [Item]
         
@@ -25,17 +40,5 @@ enum FeedItemMapper {
         var item: FeedItem {
             FeedItem(id: id, description: description, location: location, imageURL: image)
         }
-    }
-    
-    private static var OK_200: Int { return 200 }
-    
-    static func map(_ data: Data, _ response: HTTPURLResponse) -> LoadFeedResult {
-        
-        guard response.statusCode == OK_200, let root =  try? JSONDecoder().decode(Root.self, from: data)  else {
-            return .failure(RemoteFeedLoader.Error.invalidData)
-        }
-        
-        let items = root.feedItems
-        return .success(items)
     }
 }
