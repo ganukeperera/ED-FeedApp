@@ -86,6 +86,15 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		909B49CF2B72DD5800E61DD2 /* TestPlans */ = {
+			isa = PBXGroup;
+			children = (
+				90A754312B69A31E007083C7 /* CI.xctestplan */,
+				907303AA2B6C53D900E71B2E /* EssentialFeed.xctestplan */,
+			);
+			path = TestPlans;
+			sourceTree = "<group>";
+		};
 		90A753F72B52E6CD007083C7 = {
 			isa = PBXGroup;
 			children = (
@@ -119,8 +128,7 @@
 		90A7540D2B52E6CD007083C7 /* EssentialFeedTests */ = {
 			isa = PBXGroup;
 			children = (
-				90A754312B69A31E007083C7 /* CI.xctestplan */,
-				907303AA2B6C53D900E71B2E /* EssentialFeed.xctestplan */,
+				909B49CF2B72DD5800E61DD2 /* TestPlans */,
 				90A754272B61BCFF007083C7 /* Feed API */,
 			);
 			path = EssentialFeedTests;
