@@ -49,6 +49,8 @@ final class CacheFeedCaseTests: XCTestCase {
     func makeSUT() -> (LocalFeedLoader, FeedStore) {
         let store = FeedStore()
         let sut = LocalFeedLoader(store: store)
+        trackMemoryLeaks(store)
+        trackMemoryLeaks(sut)
         return (sut, store)
     }
     
