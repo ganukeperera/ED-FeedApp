@@ -50,7 +50,7 @@ final class CacheFeedCaseTests: XCTestCase {
         let store = FeedStore()
         let sut = LocalFeedLoader(store: store)
         trackMemoryLeaks(store, file: file, line: line)
-        trackMemoryLeaks(sut)
+        trackMemoryLeaks(sut, file: file, line: line)
         return (sut, store)
     }
     
