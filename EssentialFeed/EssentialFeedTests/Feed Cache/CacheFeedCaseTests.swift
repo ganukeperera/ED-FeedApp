@@ -16,8 +16,9 @@ class LocalFeedLoader {
         self.timestamp = timestamp
     }
     
-    func save(_ items: [FeedItem]) {
+    func save(_ items: [FeedItem], completion: @escaping (Error?) -> Void) {
         store.deleteCachedFeed { [weak self] error in
+            completion(error)
             guard let self, error == nil else { return }
             self.store.saveCacheFeed(items: items, timestamp: timestamp())
         }
@@ -35,8 +36,8 @@ class FeedStore {
     }
     
     func deleteCachedFeed(completion: @escaping DeletionCompletion) {
-        deletionCompletions.append(completion)
         receivedMessages.append(.deleteMessage)
+        deletionCompletions.append(completion)
     }
     
     func saveCacheFeed(items: [FeedItem], timestamp: Date) {
@@ -64,16 +65,16 @@ final class CacheFeedCaseTests: XCTestCase {
         let (sut, store) = makeSUT()
         let items = [uniqueItem(), uniqueItem()]
         
-        sut.save(items)
+        sut.save(items) { _ in }
         
         XCTAssertEqual(store.receivedMessages, [.deleteMessage])
     }
     
-    func test_save_deleteWithErrorDoesNotCallSave() {
+    func test_save_doesnotCallSaveWhenDeletionFails() {
         let (sut, store) = makeSUT()
         let items = [uniqueItem(), uniqueItem()]
         
-        sut.save(items)
+        sut.save(items) { _ in }
         sut.store.completeDeletionWithError(error: anyError())
         
         XCTAssertEqual(store.receivedMessages, [.deleteMessage])
@@ -84,10 +85,28 @@ final class CacheFeedCaseTests: XCTestCase {
         let (sut, store) = makeSUT(timestamp: { timestamp })
         let items = [uniqueItem(), uniqueItem()]
         
-        sut.save(items)
+        sut.save(items) { _ in }
         sut.store.completeDeletionWithSuccess()
         
         XCTAssertEqual(store.receivedMessages, [.deleteMessage, .insertionMeessage(items, timestamp)])
+    }
+    
+    func test_save_deliverAnErrorWhenDeletionFailure() {
+        let timestamp = Date()
+        let (sut, store) = makeSUT(timestamp: { timestamp })
+        let items = [uniqueItem(), uniqueItem()]
+        let expectedError = anyError()
+        
+        var receivedError: Error?
+        let expectation = expectation(description: "wait for insertion completion")
+        sut.save(items) { error in
+            receivedError = error
+            expectation.fulfill()
+        }
+        store.completeDeletionWithError(error: expectedError)
+        wait(for: [expectation], timeout: 1.0)
+        
+        XCTAssertEqual(expectedError, receivedError as? NSError)
     }
     
     //MARK: Helpers
