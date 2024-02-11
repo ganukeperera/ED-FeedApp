@@ -20,9 +20,7 @@ class LocalFeedLoader {
         store.deleteCachedFeed { [weak self] error in
             guard let self else { return }
             if error == nil {
-                self.store.saveCacheFeed(items: items, timestamp: timestamp()) { error in
-                    completion(error)
-                }
+                self.store.saveCacheFeed(items: items, timestamp: timestamp(), completion: completion) 
             } else {
                 completion(error)
             }
