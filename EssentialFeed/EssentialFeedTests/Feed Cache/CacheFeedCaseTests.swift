@@ -20,7 +20,7 @@ class LocalFeedLoader {
         store.deleteCachedFeed { [weak self] error in
             guard let self else { return }
             if error == nil {
-                self.store.saveCacheFeed(items: items, timestamp: timestamp(), completion: completion) 
+                self.store.saveCacheFeed(items: items, timestamp: timestamp(), completion: completion)
             } else {
                 completion(error)
             }
@@ -60,6 +60,10 @@ class FeedStore {
     
     func completeInsertionWithError(error: Error, at index: Int = 0) {
         insertionCompletions[index](error)
+    }
+    
+    func completeInsertionWithSuccess(at index: Int = 0) {
+        insertionCompletions[index](nil)
     }
 }
 
@@ -136,6 +140,24 @@ final class CacheFeedCaseTests: XCTestCase {
         wait(for: [expectation], timeout: 1.0)
         
         XCTAssertEqual(expectedError, receivedError as? NSError)
+    }
+    
+    func test_save_completeWithSuccessWhenCacheInsertionSuccess() {
+        let timestamp = Date()
+        let (sut, store) = makeSUT(timestamp: { timestamp })
+        let items = [uniqueItem(), uniqueItem()]
+        
+        var receivedError: Error?
+        let expectation = expectation(description: "wait for insertion completion")
+        sut.save(items) { error in
+            receivedError = error
+            expectation.fulfill()
+        }
+        store.completeDeletionWithSuccess()
+        store.completeInsertionWithSuccess()
+        wait(for: [expectation], timeout: 1.0)
+        
+        XCTAssertNil(receivedError)
     }
     
     //MARK: Helpers
