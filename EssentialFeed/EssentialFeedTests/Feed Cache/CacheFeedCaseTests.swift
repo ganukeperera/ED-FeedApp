@@ -102,6 +102,21 @@ final class CacheFeedCaseTests: XCTestCase {
         }
     }
     
+    func test_save_doesNotReceiveDeletionErrorWhenLocalFeedLoaderIsDeallocated() {
+        let store = FeedStoreSpy()
+        var sut: LocalFeedLoader? = LocalFeedLoader(store: store, timestamp: Date.init)
+        
+        var receivedMessage: Error?
+        sut?.save([uniqueItem()]) { error in
+            receivedMessage = error
+        }
+        
+        sut = nil
+        store.completeDeletionWithError(error: anyError())
+        
+        XCTAssertNil(receivedMessage)
+    }
+    
     //MARK: Helpers
     
     private func makeSUT(timestamp: @escaping () -> Date = Date.init, file: StaticString = #filePath, line: UInt = #line) -> (LocalFeedLoader, FeedStoreSpy) {
