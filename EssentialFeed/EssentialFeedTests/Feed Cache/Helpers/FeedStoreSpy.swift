@@ -9,8 +9,6 @@ import Foundation
 import EssentialFeed
 
 class FeedStoreSpy: FeedStore {
-    typealias DeletionCompletion = (Error?) -> Void
-    typealias InsertionCompletion = (Error?) -> Void
     private(set) var deletionCompletions = [DeletionCompletion]()
     private(set) var insertionCompletions = [InsertionCompletion]()
     private(set) var retrivalCompletions = [RetrivalCompletion]()
