@@ -31,16 +31,26 @@ public class LocalFeedLoader {
     }
     
     public func load(completion: @escaping (LoadResult) -> Void) {
-        store.retrieve{ error in
+        store.retrieve{[unowned self] error in
             switch error {
             case .empty:
                 completion(.success([]))
             case .failure(let error):
                 completion(.failure(error))
-            case let .success(feed: feed, timeStamp: _):
+            case let .success(feed, timestampOfFeed) where self.validateTime(timestampOfFeed):
                 completion(.success(feed.toModels()))
+            default:
+                completion(.success([]))
             }
         }
+    }
+    
+    private func validateTime(_ time: Date) -> Bool {
+        let calendar = Calendar(identifier: .gregorian)
+        guard let maxCacheDate = calendar.date(byAdding: .day, value: 7, to: time) else {
+            return false
+        }
+        return timestamp() < maxCacheDate
     }
     
     private func cache(_ feed: [FeedImage], completion: @escaping (SaveResult) -> Void) {

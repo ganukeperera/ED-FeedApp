@@ -12,9 +12,9 @@ class FeedStoreSpy: FeedStore {
     private(set) var deletionCompletions = [DeletionCompletion]()
     private(set) var insertionCompletions = [InsertionCompletion]()
     private(set) var retrivalCompletions = [RetrivalCompletion]()
-    private(set) var receivedMessages = [RecievedMessage]()
+    private(set) var receivedMessages = [ReceivedMessage]()
     
-    enum RecievedMessage: Equatable {
+    enum ReceivedMessage: Equatable {
         case deleteMessage
         case insertionMeessage([LocalFeedImage], Date)
         case retrival
