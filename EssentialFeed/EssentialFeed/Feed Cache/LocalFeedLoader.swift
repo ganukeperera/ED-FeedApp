@@ -8,8 +8,9 @@
 import Foundation
 
 public class LocalFeedLoader {
-    let store: FeedStore
-    let timestamp: () -> Date
+    private let store: FeedStore
+    private let timestamp: () -> Date
+    private let calendar = Calendar(identifier: .gregorian)
     
     public typealias SaveResult = Error?
     public typealias LoadResult = LoadFeedResult
@@ -45,9 +46,12 @@ public class LocalFeedLoader {
         }
     }
     
+    private var maxAllowedCacheAgeInDays: Int {
+        return 7
+    }
+    
     private func validateTime(_ time: Date) -> Bool {
-        let calendar = Calendar(identifier: .gregorian)
-        guard let maxCacheDate = calendar.date(byAdding: .day, value: 7, to: time) else {
+        guard let maxCacheDate = calendar.date(byAdding: .day, value: maxAllowedCacheAgeInDays, to: time) else {
             return false
         }
         return timestamp() < maxCacheDate
