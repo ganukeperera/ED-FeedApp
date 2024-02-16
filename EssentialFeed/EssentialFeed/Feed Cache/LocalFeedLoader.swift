@@ -34,13 +34,12 @@ public class LocalFeedLoader {
     public func load(completion: @escaping (LoadResult) -> Void) {
         store.retrieve{[unowned self] error in
             switch error {
-            case .empty:
-                completion(.success([]))
             case .failure(let error):
+                store.deleteCachedFeed { _ in }
                 completion(.failure(error))
             case let .success(feed, timestampOfFeed) where self.validateTime(timestampOfFeed):
                 completion(.success(feed.toModels()))
-            default:
+            case .success, .empty:
                 completion(.success([]))
             }
         }
