@@ -39,9 +39,7 @@ public class LocalFeedLoader {
                 completion(.failure(error))
             case let .success(feed, timestampOfFeed) where self.validateTime(timestampOfFeed):
                 completion(.success(feed.toModels()))
-            case .success:
-                completion(.success([]))
-            case .empty:
+            case .empty, .success:
                 completion(.success([]))
             }
         }
