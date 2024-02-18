@@ -92,7 +92,7 @@ final class LoadFeedFromCacheUseCaseTest: XCTestCase {
         XCTAssertEqual(store.receivedMessages, [.retrival])
     }
     
-    func test_load_doesNotDeleteCacheWhenCacheIsLessThanSevenDaysOld() {
+    func test_load_noSideEffectsWhenCacheIsLessThanSevenDaysOld() {
         let fixedDate = Date()
         let lessThanSevenDaysTimeStamp = fixedDate.addDate(days: -7).addSeconds(seconds: 1)
         let (sut, store) = makeSUT{ fixedDate }
