@@ -40,7 +40,6 @@ public class LocalFeedLoader {
             case let .success(feed, timestampOfFeed) where self.validateTime(timestampOfFeed):
                 completion(.success(feed.toModels()))
             case .success:
-                store.deleteCachedFeed { _ in }
                 completion(.success([]))
             case .empty:
                 completion(.success([]))
@@ -53,7 +52,10 @@ public class LocalFeedLoader {
             switch result {
             case .failure:
                 store.deleteCachedFeed { _ in }
-            default: break
+            case let .success(_, timestampOfFeed) where !self.validateTime(timestampOfFeed):
+                store.deleteCachedFeed { _ in }
+            case .empty, .success:
+                break
             }
         }
     }
