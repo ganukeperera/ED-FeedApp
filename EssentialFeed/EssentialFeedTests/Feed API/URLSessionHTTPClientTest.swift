@@ -136,10 +136,6 @@ class URLSessionHTTPClientTest: XCTestCase {
         URL(string: "https://a-given-url.com")!
     }
     
-    private func anyError() -> NSError {
-        NSError(domain: "Testing", code: 0)
-    }
-    
     class URLProtocolStub: URLProtocol {
         private static var stub: Stub?
         private static var observer: ((URLRequest) -> Void)?
