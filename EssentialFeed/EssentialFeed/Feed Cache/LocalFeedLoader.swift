@@ -20,6 +20,20 @@ public class LocalFeedLoader {
         self.timestamp = timestamp
     }
     
+    private var maxAllowedCacheAgeInDays: Int {
+        return 7
+    }
+    
+    private func validateTime(_ time: Date) -> Bool {
+        guard let maxCacheDate = calendar.date(byAdding: .day, value: maxAllowedCacheAgeInDays, to: time) else {
+            return false
+        }
+        return timestamp() < maxCacheDate
+    }
+}
+
+extension LocalFeedLoader: FeedLoader {
+    
     public func load(completion: @escaping (LoadResult) -> Void) {
         store.retrieve{[weak self] error in
             guard let self else { return }
@@ -32,17 +46,6 @@ public class LocalFeedLoader {
                 completion(.success([]))
             }
         }
-    }
-    
-    private var maxAllowedCacheAgeInDays: Int {
-        return 7
-    }
-    
-    private func validateTime(_ time: Date) -> Bool {
-        guard let maxCacheDate = calendar.date(byAdding: .day, value: maxAllowedCacheAgeInDays, to: time) else {
-            return false
-        }
-        return timestamp() < maxCacheDate
     }
 }
 
