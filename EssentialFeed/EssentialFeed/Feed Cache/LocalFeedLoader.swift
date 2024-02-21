@@ -9,33 +9,27 @@ import Foundation
 
 private final class FeedCachePolicy {
     private let calendar = Calendar(identifier: .gregorian)
-    private let timestamp: () -> Date
-    
-    init(timestamp: @escaping () -> Date) {
-        self.timestamp = timestamp
-    }
     
     private var maxAllowedCacheAgeInDays: Int {
         return 7
     }
     
-    func validateTime(_ time: Date) -> Bool {
+    func validateTime(_ time: Date, against: Date) -> Bool {
         guard let maxCacheDate = calendar.date(byAdding: .day, value: maxAllowedCacheAgeInDays, to: time) else {
             return false
         }
-        return timestamp() < maxCacheDate
+        return against < maxCacheDate
     }
 }
 
 public class LocalFeedLoader {
     private let store: FeedStore
     private let timestamp: () -> Date
-    private let cachePolicy: FeedCachePolicy
+    private let cachePolicy = FeedCachePolicy()
     
     public init(store: FeedStore, timestamp: @escaping () -> Date) {
         self.store = store
         self.timestamp = timestamp
-        self.cachePolicy = FeedCachePolicy(timestamp: timestamp)
     }
 }
 
@@ -48,7 +42,7 @@ extension LocalFeedLoader: FeedLoader {
             switch error {
             case .failure(let error):
                 completion(.failure(error))
-            case let .success(feed, timestampOfFeed) where self.cachePolicy.validateTime(timestampOfFeed):
+            case let .success(feed, timestampOfFeed) where self.cachePolicy.validateTime(timestampOfFeed, against: self.timestamp()):
                 completion(.success(feed.toModels()))
             case .empty, .success:
                 completion(.success([]))
@@ -87,7 +81,7 @@ extension LocalFeedLoader {
             switch result {
             case .failure:
                 store.deleteCachedFeed { _ in }
-            case let .success(_, timestampOfFeed) where !self.cachePolicy.validateTime(timestampOfFeed):
+            case let .success(_, timestampOfFeed) where !self.cachePolicy.validateTime(timestampOfFeed, against: self.timestamp()):
                 store.deleteCachedFeed { _ in }
             case .empty, .success:
                 break
