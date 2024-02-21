@@ -8,13 +8,15 @@
 import Foundation
 
 private final class FeedCachePolicy {
-    private let calendar = Calendar(identifier: .gregorian)
+    private init() {}
     
-    private var maxAllowedCacheAgeInDays: Int {
+    private static let calendar = Calendar(identifier: .gregorian)
+    
+    private static var maxAllowedCacheAgeInDays: Int {
         return 7
     }
     
-    func validateTime(_ time: Date, against: Date) -> Bool {
+    static func validateTime(_ time: Date, against: Date) -> Bool {
         guard let maxCacheDate = calendar.date(byAdding: .day, value: maxAllowedCacheAgeInDays, to: time) else {
             return false
         }
@@ -25,7 +27,6 @@ private final class FeedCachePolicy {
 public class LocalFeedLoader {
     private let store: FeedStore
     private let timestamp: () -> Date
-    private let cachePolicy = FeedCachePolicy()
     
     public init(store: FeedStore, timestamp: @escaping () -> Date) {
         self.store = store
@@ -42,7 +43,7 @@ extension LocalFeedLoader: FeedLoader {
             switch error {
             case .failure(let error):
                 completion(.failure(error))
-            case let .success(feed, timestampOfFeed) where self.cachePolicy.validateTime(timestampOfFeed, against: self.timestamp()):
+            case let .success(feed, timestampOfFeed) where FeedCachePolicy.validateTime(timestampOfFeed, against: self.timestamp()):
                 completion(.success(feed.toModels()))
             case .empty, .success:
                 completion(.success([]))
@@ -81,7 +82,7 @@ extension LocalFeedLoader {
             switch result {
             case .failure:
                 store.deleteCachedFeed { _ in }
-            case let .success(_, timestampOfFeed) where !self.cachePolicy.validateTime(timestampOfFeed, against: self.timestamp()):
+            case let .success(_, timestampOfFeed) where !FeedCachePolicy.validateTime(timestampOfFeed, against: self.timestamp()):
                 store.deleteCachedFeed { _ in }
             case .empty, .success:
                 break
