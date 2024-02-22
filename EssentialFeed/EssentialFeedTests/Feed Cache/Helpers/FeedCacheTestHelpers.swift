@@ -23,8 +23,12 @@ func anyURL() -> String {
 }
 
 extension Date {
+    private var feedCacheMaxAge: Int {
+        return 7
+    }
+    
     func minusFeedCacheMaxAge() -> Date {
-        addDate(days: -7)
+        addDate(days: -feedCacheMaxAge)
     }
     
     func addDate(days: Int) -> Date {
