@@ -23,6 +23,10 @@ func anyURL() -> String {
 }
 
 extension Date {
+    func minusFeedCacheMaxAge() -> Date {
+        addDate(days: -7)
+    }
+    
     func addDate(days: Int) -> Date {
         Calendar(identifier: .gregorian).date(byAdding: .day, value: days, to: self)!
     }
