@@ -79,8 +79,7 @@ final class CodableFeedStoreTests: XCTestCase {
     func test_retrieve_hasNoSideEffectOnEmptyCache() {
         let sut = makeSUT()
         
-        expect(sut, toRetrieve: .empty)
-        expect(sut, toRetrieve: .empty)
+        expect(sut, toRetrieveTwice: .empty)
     }
     
     func test_retrieveAfterInsertingToEmptyCache_deliversDataWhenCacheIsNotEmpty() {
@@ -110,11 +109,15 @@ final class CodableFeedStoreTests: XCTestCase {
         }
         wait(for: [exp], timeout: 1.0)
         
-        expect(sut, toRetrieve: .success(feed: feed, timeStamp: timestamp))
-        expect(sut, toRetrieve: .success(feed: feed, timeStamp: timestamp))
+        expect(sut, toRetrieveTwice: .success(feed: feed, timeStamp: timestamp))
     }
     
     // - MARK: Helpers
+    private func expect(_ sut: CodableFeedStore, toRetrieveTwice expectedResult: RetrieveCachedFeedResult, file: StaticString = #filePath, line: UInt = #line) {
+        expect(sut, toRetrieve: expectedResult, file: file, line: line)
+        expect(sut, toRetrieve: expectedResult, file: file, line: line)
+    }
+    
     private func expect(_ sut: CodableFeedStore, toRetrieve expectedResult: RetrieveCachedFeedResult, file: StaticString = #filePath, line: UInt = #line) {
         let exp = expectation(description: "waiting for retrieve to complete")
         var receivedResult = [RetrieveCachedFeedResult]()
