@@ -51,9 +51,13 @@ class CodableFeedStore {
             completion(.empty)
             return
         }
-        let cache = try! JSONDecoder().decode(Cache.self, from: data)
-        let feed = cache.feed.map { $0.localFeed }
-        completion(.success(feed: feed, timeStamp: cache.timestamp))
+        do{
+            let cache = try JSONDecoder().decode(Cache.self, from: data)
+            let feed = cache.feed.map { $0.localFeed }
+            completion(.success(feed: feed, timeStamp: cache.timestamp))
+        } catch {
+            completion(.failure(error))
+        }
     }
 }
 
@@ -102,6 +106,14 @@ final class CodableFeedStoreTests: XCTestCase {
         expect(sut, toRetrieveTwice: .success(feed: feed, timeStamp: timestamp))
     }
     
+    func test_retreive_deliversErrorOnRetrievalError() {
+        let sut = makeSUT()
+        
+        try! "invalid Data".write(to: testSpecificStoreURL(), atomically: true, encoding: .utf8)
+        
+        expect(sut, toRetrieve: .failure(anyError()))
+    }
+    
     // - MARK: Helpers
     private func insert(_ feed: [LocalFeedImage], timestamp: Date, to sut: CodableFeedStore) {
         let exp = expectation(description: "waiting for retrieve to complete")
@@ -123,13 +135,13 @@ final class CodableFeedStoreTests: XCTestCase {
         
         sut.retrieve { result in
             switch (result, expectedResult) {
-            case (.empty, .empty):
+            case (.empty, .empty), (.failure, .failure):
                 break
             case let (.success(foundFeed, foundTimestamp), .success(expectedFeed, expectedTimestamp)):
                 XCTAssertEqual(foundFeed, expectedFeed, file: file, line: line)
                 XCTAssertEqual(foundTimestamp, expectedTimestamp, file: file, line: line)
             default:
-                XCTFail("expected \(expectedResult) but received \(receivedResult) instead", file: file, line: line)
+                XCTFail("expected \(expectedResult) but received \(result) instead", file: file, line: line)
             }
             exp.fulfill()
         }
