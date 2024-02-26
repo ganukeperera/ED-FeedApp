@@ -115,6 +115,15 @@ final class CodableFeedStoreTests: XCTestCase {
         expect(sut, toRetrieve: .failure(anyError()))
     }
     
+    func test_retreive_hasNoSideEffectsOnFailure() {
+        let storeURL = testSpecificStoreURL()
+        let sut = makeSUT(storeURL)
+        
+        try! "invalid Data".write(to: storeURL, atomically: true, encoding: .utf8)
+        
+        expect(sut, toRetrieveTwice: .failure(anyError()))
+    }
+    
     // - MARK: Helpers
     private func insert(_ feed: [LocalFeedImage], timestamp: Date, to sut: CodableFeedStore) {
         let exp = expectation(description: "waiting for retrieve to complete")
