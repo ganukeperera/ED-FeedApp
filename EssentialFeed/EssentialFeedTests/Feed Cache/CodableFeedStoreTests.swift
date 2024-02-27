@@ -166,13 +166,9 @@ final class CodableFeedStoreTests: XCTestCase {
     func test_delete_hasNoSideEffectOnEmptyCache() {
         let storeURL = testSpecificStoreURL()
         let sut = makeSUT(storeURL)
-        let exp = expectation(description: "wait for deletion on empty cache")
         
-        sut.deleteCachedFeed { error in
-            XCTAssertNil(error, "Expected no error when deleting empty cache")
-            exp.fulfill()
-        }
-        wait(for: [exp], timeout: 1.0)
+        let deletionError = delete(sut)
+        XCTAssertNil(deletionError, "Expected non-empty cache deletion to succeed")
         
         expect(sut, toRetrieve: .empty)
     }
@@ -180,16 +176,13 @@ final class CodableFeedStoreTests: XCTestCase {
     func test_delete_emptiesPrviouslyInsertedCache() {
         let storeURL = testSpecificStoreURL()
         let sut = makeSUT(storeURL)
-        let exp = expectation(description: "wait for deletion on empty cache")
         
         let firstInsertionError = insert(uniqueImageFeed().local, timestamp: Date(), to: sut)
         XCTAssertNil(firstInsertionError)
         
-        sut.deleteCachedFeed { error in
-            XCTAssertNil(error, "Expected no error when deleting empty cache")
-            exp.fulfill()
-        }
-        wait(for: [exp], timeout: 1.0)
+        let deletionError = delete(sut)
+        XCTAssertNil(deletionError, "Expected cache deletion to succeed")
+        
         expect(sut, toRetrieve: .empty)
     }
     
@@ -197,15 +190,22 @@ final class CodableFeedStoreTests: XCTestCase {
         let noPermissionURL = cacheDirectory()
         let sut = makeSUT(noPermissionURL)
         
-        let exp = expectation(description: "wait for deletion on empty cache")
-        sut.deleteCachedFeed { error in
-            XCTAssertNotNil(error, "Expected error on deletion of not permitted URL")
-            exp.fulfill()
-        }
-        wait(for: [exp], timeout: 1.0)
+        let deletionError = delete(sut)
+        XCTAssertNotNil(deletionError, "Should deliver error on deletion fon non permitted URL")
     }
     
     // - MARK: Helpers
+    func delete(_ sut: CodableFeedStore) -> Error? {
+        let exp = expectation(description: "wait for deletion on empty cache")
+        var deletionError: Error?
+        sut.deleteCachedFeed { error in
+            deletionError = error
+            exp.fulfill()
+        }
+        wait(for: [exp], timeout: 1.0)
+        return deletionError
+    }
+    
     @discardableResult
     private func insert(_ feed: [LocalFeedImage], timestamp: Date, to sut: CodableFeedStore) -> Error? {
         let exp = expectation(description: "waiting for retrieve to complete")
