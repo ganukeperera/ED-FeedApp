@@ -63,6 +63,10 @@ class CodableFeedStore {
             completion(.failure(error))
         }
     }
+    
+    func deleteCachedFeed(completion: @escaping FeedStore.DeletionCompletion) {
+        completion(nil)
+    }
 }
 
 final class CodableFeedStoreTests: XCTestCase {
@@ -150,6 +154,20 @@ final class CodableFeedStoreTests: XCTestCase {
         let firstInsertionError = insert(uniqueImageFeed().local, timestamp: Date(), to: sut)
         
         XCTAssertNotNil(firstInsertionError, "Expected insertion error on invalid store url ")
+    }
+    
+    func test_delete_hasNoSideEffectOnEmptyCache() {
+        let storeURL = testSpecificStoreURL()
+        let sut = makeSUT(storeURL)
+        let exp = expectation(description: "wait for deletion on empty cache")
+        
+        sut.deleteCachedFeed { error in
+            XCTAssertNil(error, "Expected no error when deleting empty cache")
+            exp.fulfill()
+        }
+        wait(for: [exp], timeout: 1.0)
+        
+        expect(sut, toRetrieve: .empty)
     }
     
     // - MARK: Helpers
