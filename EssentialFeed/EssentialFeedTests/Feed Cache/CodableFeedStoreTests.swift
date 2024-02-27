@@ -67,8 +67,12 @@ class CodableFeedStore {
     func deleteCachedFeed(completion: @escaping FeedStore.DeletionCompletion) {
         let fileManager = FileManager.default
         guard fileManager.fileExists(atPath: storeURL.path) else { return completion(nil) }
-        try! fileManager.removeItem(at: storeURL)
-        completion(nil)
+        do {
+            try fileManager.removeItem(at: storeURL)
+            completion(nil)
+        } catch {
+            completion(error)
+        }
     }
 }
 
@@ -189,6 +193,18 @@ final class CodableFeedStoreTests: XCTestCase {
         expect(sut, toRetrieve: .empty)
     }
     
+    func test_delete_deliversErrorOnDeletionError() {
+        let noPermissionURL = cacheDirectory()
+        let sut = makeSUT(noPermissionURL)
+        
+        let exp = expectation(description: "wait for deletion on empty cache")
+        sut.deleteCachedFeed { error in
+            XCTAssertNotNil(error, "Expected error on deletion of not permitted URL")
+            exp.fulfill()
+        }
+        wait(for: [exp], timeout: 1.0)
+    }
+    
     // - MARK: Helpers
     @discardableResult
     private func insert(_ feed: [LocalFeedImage], timestamp: Date, to sut: CodableFeedStore) -> Error? {
@@ -234,6 +250,10 @@ final class CodableFeedStoreTests: XCTestCase {
     
     private func testSpecificStoreURL() -> URL {
         return FileManager.default.urls(for: .cachesDirectory, in: .userDomainMask).first!.appendingPathExtension("\(type(of: self)).store")
+    }
+    
+    private func cacheDirectory() -> URL {
+        return FileManager.default.urls(for: .cachesDirectory, in: .userDomainMask).first!
     }
     
     private func setupEmptyStoreState() {
