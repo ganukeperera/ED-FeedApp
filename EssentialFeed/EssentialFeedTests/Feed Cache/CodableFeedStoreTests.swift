@@ -126,6 +126,32 @@ final class CodableFeedStoreTests: XCTestCase {
         XCTAssertNotNil(deletionError, "Should deliver error on deletion fon non permitted URL")
     }
     
+    func test_storeSideEffects_runSerially() {
+        let sut = makeSUT()
+        var compeletionOperationsInOrder = [XCTestExpectation]()
+        
+        let op1 = expectation(description: "Operation 1")
+        sut.saveCacheFeed(uniqueImageFeed().local, timestamp: Date()) { _ in
+            compeletionOperationsInOrder.append(op1)
+            op1.fulfill()
+        }
+        
+        let op2 = expectation(description: "Operation 2")
+        sut.deleteCachedFeed { _ in
+            compeletionOperationsInOrder.append(op2)
+            op2.fulfill()
+        }
+        
+        let op3 = expectation(description: "Operation 3")
+        sut.retrieve { _ in
+            compeletionOperationsInOrder.append(op3)
+            op3.fulfill()
+        }
+        waitForExpectations(timeout: 5.0)
+        
+        XCTAssertEqual(compeletionOperationsInOrder, [op1, op2, op3])
+    }
+    
     // - MARK: Helpers
     func delete(_ sut: FeedStore) -> Error? {
         let exp = expectation(description: "wait for deletion on empty cache")
