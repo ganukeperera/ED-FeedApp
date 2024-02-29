@@ -143,7 +143,7 @@ final class CodableFeedStoreTests: XCTestCase {
         }
         
         let op3 = expectation(description: "Operation 3")
-        sut.retrieve { _ in
+        sut.saveCacheFeed(uniqueImageFeed().local, timestamp: Date()) { _ in
             compeletionOperationsInOrder.append(op3)
             op3.fulfill()
         }
