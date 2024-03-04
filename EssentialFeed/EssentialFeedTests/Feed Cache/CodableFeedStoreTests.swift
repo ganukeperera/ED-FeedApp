@@ -117,17 +117,14 @@ final class CodableFeedStoreTests: XCTestCase, FailableFeedStoreSpecs {
         let noPermissionURL = cacheDirectory()
         let sut = makeSUT(noPermissionURL)
         
-        let deletionError = delete(sut)
-        XCTAssertNotNil(deletionError, "Should deliver error on deletion fon non permitted URL")
+        assertThatDeleteDeliversErrorOnDeletionError(on: sut)
     }
     
     func test_delete_noSideEffectsOnDeletionError() {
         let noPermissionURL = cacheDirectory()
         let sut = makeSUT(noPermissionURL)
         
-        delete(sut)
-        
-        expect(sut, toRetrieve: .empty)
+        assertThatDeleteHasNoSideEffectsOnDeletionError(on: sut)
     }
     
     func test_storeSideEffects_runSerially() {
