@@ -1,0 +1,55 @@
+//
+//  CoreDataFeedStoreTests.swift
+//  EssentialFeedTests
+//
+//  Created by Ganuke Perera on 2024-03-06.
+//
+
+import XCTest
+import EssentialFeed
+
+class CoreDataFeedStoreTests: XCTestCase, FeedStoreSpecs {
+    func test_retrieve_deliversEmptyDataOnEmptyResult() {
+        
+    }
+    
+    func test_retrieve_hasNoSideEffectOnEmptyCache() {
+        
+    }
+    
+    func test_retrieve_deliversFoundValuesOnNonEmptyCache() {
+        
+    }
+    
+    func test_retrieve_hasNoSideEffectOnNonEmptyCache() {
+        
+    }
+    
+    func test_saveCacheFeed_deliversNoErrorOnEmptyCache() {
+    
+    }
+    
+    func test_saveCacheFeed_deliversNoErrorOnNonEmptyCache() {
+        
+    }
+    
+    func test_saveCacheFeed_overidePreviouslyInsertedCacheValues() {
+        
+    }
+    
+    func test_delete_deliversNoErrorOnEmptyCache() {
+        
+    }
+    
+    func test_delete_hasNoSideEffectOnEmptyCache() {
+        
+    }
+    
+    func test_delete_emptiesPrviouslyInsertedCache() {
+        
+    }
+    
+    func test_storeSideEffects_runSerially() {
+        
+    }
+}
