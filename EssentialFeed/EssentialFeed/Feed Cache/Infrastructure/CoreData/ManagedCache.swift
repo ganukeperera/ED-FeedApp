@@ -14,7 +14,6 @@ class ManagedCache: NSManagedObject {
 }
 
 extension ManagedCache {
-    
     var localFeed: [LocalFeedImage] {
         return feed.compactMap { ($0 as? ManagedFeedImage)?.local }
     }

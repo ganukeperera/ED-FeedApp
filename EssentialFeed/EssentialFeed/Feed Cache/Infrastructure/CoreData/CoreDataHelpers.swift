@@ -8,7 +8,6 @@
 import CoreData
 
 extension NSPersistentContainer {
-    
     enum LoadError: Error {
         case modelNotFound
         case failedToLoadPersistentStores(Swift.Error)
@@ -30,7 +29,6 @@ extension NSPersistentContainer {
 }
 
 private extension NSManagedObjectModel {
-    
     static func with(name: String, bundle: Bundle) -> NSManagedObjectModel? {
         return bundle.url(forResource: name, withExtension: "momd").flatMap { NSManagedObjectModel(contentsOf: $0)}
     }
