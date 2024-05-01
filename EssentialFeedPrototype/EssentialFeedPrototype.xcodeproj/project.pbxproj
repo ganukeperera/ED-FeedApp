@@ -9,7 +9,6 @@
 /* Begin PBXBuildFile section */
 		90E2DA022BE1E9E20051CB04 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 90E2DA012BE1E9E20051CB04 /* AppDelegate.swift */; };
 		90E2DA042BE1E9E20051CB04 /* SceneDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 90E2DA032BE1E9E20051CB04 /* SceneDelegate.swift */; };
-		90E2DA062BE1E9E20051CB04 /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 90E2DA052BE1E9E20051CB04 /* ViewController.swift */; };
 		90E2DA092BE1E9E20051CB04 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 90E2DA072BE1E9E20051CB04 /* Main.storyboard */; };
 		90E2DA0C2BE1E9E20051CB04 /* EssentialFeedPrototype.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = 90E2DA0A2BE1E9E20051CB04 /* EssentialFeedPrototype.xcdatamodeld */; };
 		90E2DA0E2BE1E9E40051CB04 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 90E2DA0D2BE1E9E40051CB04 /* Assets.xcassets */; };
@@ -20,7 +19,6 @@
 		90E2D9FE2BE1E9E20051CB04 /* EssentialFeedPrototype.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = EssentialFeedPrototype.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		90E2DA012BE1E9E20051CB04 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		90E2DA032BE1E9E20051CB04 /* SceneDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SceneDelegate.swift; sourceTree = "<group>"; };
-		90E2DA052BE1E9E20051CB04 /* ViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewController.swift; sourceTree = "<group>"; };
 		90E2DA082BE1E9E20051CB04 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main.storyboard; sourceTree = "<group>"; };
 		90E2DA0B2BE1E9E20051CB04 /* EssentialFeedPrototype.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = EssentialFeedPrototype.xcdatamodel; sourceTree = "<group>"; };
 		90E2DA0D2BE1E9E40051CB04 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
@@ -60,7 +58,6 @@
 			children = (
 				90E2DA012BE1E9E20051CB04 /* AppDelegate.swift */,
 				90E2DA032BE1E9E20051CB04 /* SceneDelegate.swift */,
-				90E2DA052BE1E9E20051CB04 /* ViewController.swift */,
 				90E2DA072BE1E9E20051CB04 /* Main.storyboard */,
 				90E2DA0D2BE1E9E40051CB04 /* Assets.xcassets */,
 				90E2DA0F2BE1E9E40051CB04 /* LaunchScreen.storyboard */,
@@ -141,7 +138,6 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				90E2DA062BE1E9E20051CB04 /* ViewController.swift in Sources */,
 				90E2DA0C2BE1E9E20051CB04 /* EssentialFeedPrototype.xcdatamodeld in Sources */,
 				90E2DA022BE1E9E20051CB04 /* AppDelegate.swift in Sources */,
 				90E2DA042BE1E9E20051CB04 /* SceneDelegate.swift in Sources */,
